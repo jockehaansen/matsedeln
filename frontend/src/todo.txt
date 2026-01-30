@@ -1,0 +1,435 @@
+Deal.
+
+Here’s a practical scrum-style plan that gets you to a working v1 fast, with clean structure and minimal code churn. I’ll assume React + TS + MUI, client-side only unless you later add a backend.
+
+Product scope (clear, small, shippable)
+Must-have (v1)
+
+Dashboard page (startpage)
+
+“Available foods” list
+
+“Coming recipes” list
+
+Budget: spent vs budget
+
+Actions:
+
+Increase/decrease portions
+
+Mark meal as finished / remove from “coming”
+
+Add new recipe to either list
+
+Budget settings (budget amount; maybe reset spent)
+
+Login
+
+Predetermined credentials
+
+No signup
+
+Protect routes (redirect to login)
+
+Nice-to-have (v2, not urgent)
+
+“Saved recipes” page (browse/edit list of saved recipes)
+
+More recipe details, filtering, etc.
+
+Architecture decisions (so you don’t regret it later)
+Data model (keep it simple)
+
+Recipe = the “definition” (title, protein type, default portions, etc.)
+
+PlannedMeal (or PlannedRecipe) = a recipe instance in the “Coming” stack with:
+
+recipeId
+
+portionsRemaining
+
+optional: planned date
+
+This prevents mixing “recipe library data” with “this week’s plan”.
+
+State management
+
+For a small app: Context + useReducer is “good enough” and keeps logic centralized.
+
+Persistence
+
+Use localStorage for v1 (budget, lists, auth flag). It’s fast, works offline, no backend required.
+
+Backlog (Epics → Stories)
+Epic 1: App shell + routing
+
+Stories
+
+Create routes: /login, /dashboard, /recipes (placeholder for v2)
+
+Protected route wrapper: if not authed → /login
+
+Layout: sidebar or topbar (choose one and stick to it)
+
+Definition of Done
+
+You can navigate only when logged in
+
+Refresh keeps you logged in (localStorage)
+
+Epic 2: Dashboard UI (static first)
+
+Stories
+
+Dashboard layout with three boxes (Foods / Coming Recipes / Budget)
+
+Create reusable RecipeCard (you already started)
+
+Render lists with dummy state (no actions yet)
+
+DoD
+
+Dashboard looks right at desktop + mobile
+
+Components accept props cleanly (no hardcoded data inside)
+
+Epic 3: Dashboard interactions
+
+Stories
+
+Portions +/- changes state
+
+Mark “finished” removes planned item from Coming list (not delete recipe)
+
+Add recipe:
+
+basic dialog (title + protein + portions)
+
+choose destination: Available vs Coming
+
+Budget controls:
+
+set monthly budget
+
+add spend (simple input)
+
+reset month/spend (optional)
+
+DoD
+
+All actions update UI instantly
+
+No TypeScript any-casts for core flows
+
+Epic 4: Persistence + quality
+
+Stories
+
+Persist state to localStorage (hydrate on load)
+
+Add basic validation (no empty titles, portions >= 0, budget >= 0)
+
+Polishing: compact icon buttons, consistent spacing, chip colors
+
+DoD
+
+Refresh doesn’t wipe state
+
+App doesn’t break on bad inputs
+
+Epic 5: Saved recipes page (v2)
+
+Park this until v1 is stable.
+
+Sprint plan (2–4 short sprints)
+Sprint 1 (Foundation)
+
+Routing + auth gate
+
+Dashboard layout skeleton
+
+Basic card components
+
+Deliverable: You can log in and see the dashboard layout.
+
+Sprint 2 (State + actions)
+
+Context/useReducer store
+
+Portions +/- and “finished”
+
+Add recipe modal (minimal fields)
+
+Deliverable: Dashboard is interactive and usable.
+
+Sprint 3 (Budget + persistence)
+
+Budget settings + spend tracking
+
+localStorage hydration/save
+
+UI polish / edge cases
+
+Deliverable: Feels like an actual app; survives refresh.
+
+How I’ll guide you (working agreement)
+
+You show current state + what you’re trying to do next.
+
+I’ll respond with:
+
+the next 1–3 steps
+
+“good enough vs best practice” callouts
+
+minimal code snippets only when they unblock you
+
+No fluff, no pep talks.
+
+First task (start now)
+
+Do this in order:
+
+Create routes + protected route
+
+Implement login screen with hardcoded credentials
+
+After login, land on /dashboard
+
+If you paste your current folder structure (just the top-level src/ tree) and what router you’re using (React Router v6?), I’ll give you the exact next steps with minimal code.
+
+For some context, i want to have a backend in java spring boot with this.
+
+Resend plan with this in mind.
+
+Got it. With a Spring Boot backend, the plan shifts: state + persistence lives server-side, and the frontend becomes a thin client that calls APIs.
+
+Below is the revised scrum plan (still small-app pragmatic, minimal ceremony).
+
+Target architecture (small but solid)
+Frontend (React + TS + MUI)
+
+Routes: /login, /dashboard, /recipes (v2)
+
+Auth: store access token (or session cookie) and call API
+
+UI state: mostly “view state”; data comes from API
+
+Backend (Spring Boot)
+
+REST API
+
+PostgreSQL
+
+Validation
+
+Auth with predetermined credentials (no signup)
+
+Migration tool: Flyway (recommended)
+
+Key decisions now (don’t overthink, just pick)
+Auth approach (recommended for SPA)
+
+JWT access token:
+
+POST /auth/login with username/password
+
+returns token
+
+frontend sends Authorization: Bearer <token> on requests
+
+Why: simplest SPA-friendly “real” auth without fighting cookies/CSRF.
+
+Predetermined credentials:
+
+Use in-memory user(s) or a seeded DB user
+
+No registration endpoints
+
+Data model (keep it minimal)
+v1 entities
+
+Recipe
+
+id, title, proteinType, defaultPortions, (optional: notes)
+
+PlannedMeal (Coming recipes list)
+
+id, recipeId, portionsRemaining, createdAt, status (optional)
+
+PantryItem (Foods available list)
+
+id, name, quantityText (or qty number/unit later)
+
+Budget
+
+id (or singleton), monthlyBudget, spentSoFar
+
+That’s enough to ship the dashboard.
+
+Saved recipes page (v2) can just list Recipe later.
+
+API surface (v1)
+Auth
+
+POST /auth/login → { token }
+
+GET /auth/me → optional sanity endpoint
+
+Dashboard data (either 1 aggregated endpoint or separate)
+
+Good enough:
+
+GET /dashboard → { pantryItems, plannedMeals, budget }
+
+Or separate endpoints (also fine):
+
+GET /pantry
+
+GET /planned-meals
+
+GET /budget
+
+Actions you need
+
+Pantry
+
+POST /pantry add item
+
+DELETE /pantry/{id} remove
+
+Planned meals
+
+POST /planned-meals add (by recipeId + starting portions)
+
+PATCH /planned-meals/{id} update portionsRemaining
+
+POST /planned-meals/{id}/finish (or DELETE if “remove from plan”)
+
+Recipes (v1: create only; v2: list/edit)
+
+POST /recipes
+
+GET /recipes (for saved recipes page later)
+
+Budget
+
+PUT /budget set monthly budget
+
+POST /budget/spend add spend
+
+POST /budget/reset optional
+
+Validation: title required, portions >= 0, budget >= 0.
+
+Backlog (Epics → Stories)
+Epic 1: Backend foundation
+
+Stories
+
+Spring Boot project with modules: web, security, data-jpa, validation, postgres, flyway
+
+Base config: env vars, profiles (dev, prod)
+
+Health check endpoint
+
+DoD
+
+App runs with Postgres
+
+Flyway creates tables
+
+Epic 2: Auth (predetermined credentials)
+
+Stories
+
+Security config with JWT
+
+Login endpoint returns token
+
+Protect all endpoints except /auth/login and health
+
+DoD
+
+Can’t hit /dashboard without token
+
+Token works from frontend via header
+
+Epic 3: Core domain + CRUD
+
+Stories
+
+Create entities + repositories
+
+Implement pantry endpoints
+
+Implement planned-meals endpoints (portions + finish/remove)
+
+Implement budget endpoints
+
+DoD
+
+All actions persist in DB
+
+Basic validation errors return clean responses
+
+Epic 4: Frontend integration
+
+Stories
+
+Login page calls /auth/login, stores token
+
+Axios client attaches bearer token + handles 401 → redirect login
+
+Dashboard page loads from /dashboard (or 3 endpoints)
+
+Wire UI actions to API:
+
+portions +/- → PATCH
+
+finish/remove → POST/DELETE
+
+add recipe to stack → POST
+
+budget update/spend → PUT/POST
+
+DoD
+
+Full dashboard functionality works end-to-end
+
+Epic 5: Saved recipes page (v2)
+
+Stories
+
+GET /recipes + page showing list
+
+(Optional) edit recipe, tags, search
+
+Sprint plan (practical)
+Sprint 1 (Backend boot + auth)
+
+Flyway + Postgres wired
+
+JWT auth + login
+
+Deliverable: you can login and successfully call a protected “hello” endpoint.
+
+Sprint 2 (Domain + endpoints)
+
+Pantry + PlannedMeals + Budget endpoints
+
+Deliverable: Postman/Insomnia can fully operate the dashboard features.
+
+Sprint 3 (Frontend + integration)
+
+React login + protected routing
+
+Dashboard reads from API, actions wired
+
+Deliverable: the app works end-to-end.
+
+Sprint 4 (Polish + v2 seed)
+
+error handling, empty states, optimistic UI
+
+start Saved Recipes page if time
