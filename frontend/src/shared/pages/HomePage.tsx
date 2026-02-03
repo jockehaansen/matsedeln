@@ -9,13 +9,50 @@ import {
   LinearProgress,
 } from "@mui/material";
 
-import { availableRecipes, upcomingRecipes } from "../data/mock/recipes";
 import RecipeCard from "../../recipes/components/RecipeCard";
+import type { RecipeType } from "../../recipes/types/RecipeType";
+import { useEffect, useState } from "react";
+import { getAvailableRecipes, getUpcomingRecipes } from "../../recipes/api";
 
 export default function HomePage() {
   const budget = 3000;
   const spent = 1875;
   const pct = Math.min(100, Math.max(0, (spent / budget) * 100));
+
+  const [availableRecipes, setAvailableRecipes] = useState<RecipeType[]>([]);
+  const [upcomingRecipes, setUpcomingRecipes] = useState<RecipeType[]>([]);
+  const [loading, isLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      isLoading(true);
+      setError(null);
+
+      try {
+        const [available, upcoming] = await Promise.all([
+          getAvailableRecipes(),
+          getUpcomingRecipes(),
+        ]);
+
+        if (!cancelled) {
+          setAvailableRecipes(available);
+          setUpcomingRecipes(upcoming);
+        }
+      } catch (e) {
+        if (!cancelled) setError("Failed to load recipes");
+      } finally {
+        if (!cancelled) isLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <Box sx={{ p: 3 }}>

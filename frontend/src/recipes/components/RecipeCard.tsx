@@ -13,7 +13,6 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import type { RecipeType } from "../types/RecipeType";
-import type { ProteinType } from "../types/ProteinType";
 import { EditOutlined, RemoveCircleOutline } from "@mui/icons-material";
 import { proteinColorMap } from "../../shared/proteinColorMap";
 
@@ -22,8 +21,7 @@ type RecipeProps = {
 };
 
 export default function RecipeCard({ recipe }: RecipeProps) {
-  const proteinChipColor =
-    proteinColorMap[recipe.protein.toLowerCase() as ProteinType];
+  const proteinChipColor = proteinColorMap[recipe.proteinType];
 
   return (
     <Card
@@ -58,7 +56,7 @@ export default function RecipeCard({ recipe }: RecipeProps) {
               <Chip
                 size="small"
                 variant="outlined"
-                label={recipe.protein.toLowerCase()}
+                label={recipe.proteinType}
                 sx={{
                   borderColor: proteinChipColor,
                   color: proteinChipColor,

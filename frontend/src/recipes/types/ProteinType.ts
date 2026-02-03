@@ -1,1 +1,1 @@
-export type ProteinType = "meat" | "fish" | "vegetarian";
+export type ProteinType = "MEAT" | "FISH" | "VEGETARIAN";
