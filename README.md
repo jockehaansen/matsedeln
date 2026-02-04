@@ -15,7 +15,6 @@ It is intentionally scoped to stay simple while following solid engineering prac
 - Automatic status transitions (e.g. cooked recipes)
 - Backend-driven state (database is the source of truth)
 - Basic authentication (predetermined credentials)
-- Seeded data for local development
 
 #### Planned (v2)
 
@@ -55,13 +54,11 @@ Monorepo (logical separation)
 - TypeScript
 - MUI (Material UI)
 - Axios (single configured client)
-- Local state (useState / useEffect)
 
 #### Design principles:
 
 - Thin components
 - Centralized API access
-- No over-engineering (no global state libraries yet)
 
 ### Authentication
 
@@ -101,8 +98,10 @@ DB_PASSWORD=...
 
 ### Run
 
-´´´bash cd backend
-./gradlew bootRun ´´´
+```bash
+cd backend
+./gradlew bootRun
+```
 
 
 API will be available at:
@@ -118,10 +117,11 @@ http://localhost:8080/api
 
 #### Run:
 
-´´´bash cd frontend
+```bash
+cd frontend
 npm install 
-npm run dev ```
-
+npm run dev 
+```
 
 Frontend will be available at:
 
