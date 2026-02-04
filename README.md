@@ -1,4 +1,4 @@
-# Matsedel 🍽️
+# Matsedel
 
 ### A simple food-planning dashboard
 
@@ -19,139 +19,108 @@ It is intentionally scoped to stay simple while following solid engineering prac
 
 #### Planned (v2)
 
-Saved recipes page
-
-Budget tracking & statistics
-
-Recipe editing
-
-Improved authentication (JWT)
-
-Deployment (frontend + backend)
+- Saved recipes page
+- Budget tracking & statistics
+- Recipe editing
+- Improved authentication (JWT)
+- Deployment (frontend + backend)
 
 ### Architecture
 
 Monorepo (logical separation)
 
-matsedel/
-├─ backend/     # Java / Spring Boot API
-└─ frontend/    # React / TypeScript SPA
+- matsedel/
+- ├─ backend/     # Java / Spring Boot API
+- └─ frontend/    # React / TypeScript SPA
 
-#### Backend
+### Backend
 
-Java 21
+- Java 21
+- Spring Boot
+- Spring Security (Basic Auth)
+- Spring Data JPA
+- PostgreSQL (Neon)
+- Flyway (schema + seed migrations)
 
-Spring Boot
+#### Design principles:
 
-Spring Security (Basic Auth)
+- Semi-modular monolith
+- Explicit database migrations
+- Service layer owns business rules
+- Controllers expose stable API contracts
 
-Spring Data JPA
+### Frontend
 
-PostgreSQL (Neon)
+- React
+- TypeScript
+- MUI (Material UI)
+- Axios (single configured client)
+- Local state (useState / useEffect)
 
-Flyway (schema + seed migrations)
+#### Design principles:
 
-Design principles:
+- Thin components
+- Centralized API access
+- No over-engineering (no global state libraries yet)
 
-Semi-modular monolith
+### Authentication
 
-Explicit database migrations
-
-Service layer owns business rules
-
-Controllers expose stable API contracts
-
-#### Frontend
-
-React
-
-TypeScript
-
-MUI (Material UI)
-
-Axios (single configured client)
-
-Local state (useState / useEffect)
-
-### Design principles:
-
-Thin components
-
-Centralized API access
-
-No over-engineering (no global state libraries yet)
-
-#### Authentication
-
-Basic Auth
-
-Predetermined credentials (no signup)
-
-Stored client-side as Base64 for development
-
-All /api/** endpoints are protected
+- Basic Auth
+- Predetermined credentials (no signup)
+- Stored client-side as Base64 for development
+- All /api/** endpoints are protected
 
 This will be replaced with JWT in a later iteration.
 
 #### Database & Migrations
 
-PostgreSQL (hosted on Neon)
-
-Flyway is the single source of truth for schema
-
-Hibernate runs in validate mode (no auto-DDL)
+- PostgreSQL (hosted on Neon)
+- Flyway is the single source of truth for schema
+- Hibernate runs in validate mode (no auto-DDL)
 
 #### Example migrations:
 
-V1__create_recipes_table.sql
-
-V2__seed_recipes.sql
+- V1__create_recipes_table.sql
+- V2__seed_recipes.sql
 
 ## Getting Started (Local)
-Backend
+### Backend
 
-Requirements
+#### Requirements:
 
-Java 21
+- Java 21
+- PostgreSQL (or Neon)
+- Gradle
 
-PostgreSQL (or Neon)
-
-Gradle
-
-Environment variables
+#### Environment variables
 
 DB_URL=jdbc:postgresql://<host>/<db>?sslmode=require
 DB_USERNAME=...
 DB_PASSWORD=...
 
 
-Run
+### Run
 
-cd backend
-./gradlew bootRun
+´´´bash cd backend
+./gradlew bootRun ´´´
 
 
 API will be available at:
 
 http://localhost:8080/api
 
-Frontend
+### Frontend
 
-Requirements
+#### Requirements:
 
-Node.js (18+ recommended)
+- Node.js (18+ recommended)
+- npm / pnpm / yarn
 
-npm / pnpm / yarn
+#### Run:
 
-Install
-
-cd frontend
-npm install
-
-
-Run
-
-npm run dev
+´´´bash cd frontend
+npm install 
+npm run dev ```
 
 
 Frontend will be available at:
