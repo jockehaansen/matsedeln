@@ -1,29 +1,23 @@
-Matsedel 🍽️
+# Matsedel 🍽️
 
-A simple food-planning dashboard
+### A simple food-planning dashboard
 
 Matsedel is a small full-stack web application for planning meals, tracking available and upcoming recipes, and managing portions against a budget.
 It is intentionally scoped to stay simple while following solid engineering practices.
 
-Current
+### Current
 
-Dashboard with:
+#### Dashboard with:
 
-Available recipes
+- Available recipes
+- Upcoming recipes
+- Portion management (+ / −)
+- Automatic status transitions (e.g. cooked recipes)
+- Backend-driven state (database is the source of truth)
+- Basic authentication (predetermined credentials)
+- Seeded data for local development
 
-Upcoming recipes
-
-Portion management (+ / −)
-
-Automatic status transitions (e.g. cooked recipes)
-
-Backend-driven state (database is the source of truth)
-
-Basic authentication (predetermined credentials)
-
-Seeded data for local development
-
-Planned (v2)
+#### Planned (v2)
 
 Saved recipes page
 
@@ -35,7 +29,7 @@ Improved authentication (JWT)
 
 Deployment (frontend + backend)
 
-Architecture
+### Architecture
 
 Monorepo (logical separation)
 
@@ -43,7 +37,7 @@ matsedel/
 ├─ backend/     # Java / Spring Boot API
 └─ frontend/    # React / TypeScript SPA
 
-Backend
+#### Backend
 
 Java 21
 
@@ -67,7 +61,7 @@ Service layer owns business rules
 
 Controllers expose stable API contracts
 
-Frontend
+#### Frontend
 
 React
 
@@ -79,7 +73,7 @@ Axios (single configured client)
 
 Local state (useState / useEffect)
 
-Design principles:
+### Design principles:
 
 Thin components
 
@@ -87,7 +81,7 @@ Centralized API access
 
 No over-engineering (no global state libraries yet)
 
-Authentication
+#### Authentication
 
 Basic Auth
 
@@ -99,7 +93,7 @@ All /api/** endpoints are protected
 
 This will be replaced with JWT in a later iteration.
 
-Database & Migrations
+#### Database & Migrations
 
 PostgreSQL (hosted on Neon)
 
@@ -107,13 +101,13 @@ Flyway is the single source of truth for schema
 
 Hibernate runs in validate mode (no auto-DDL)
 
-Example migrations:
+#### Example migrations:
 
 V1__create_recipes_table.sql
 
 V2__seed_recipes.sql
 
-Getting Started (Local)
+## Getting Started (Local)
 Backend
 
 Requirements
