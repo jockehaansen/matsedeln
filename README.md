@@ -1,73 +1,153 @@
-# React + TypeScript + Vite
+# Matsedel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### A simple food-planning dashboard
 
-Currently, two official plugins are available:
+Matsedel is a small full-stack web application for planning meals, tracking available and upcoming recipes, and managing portions against a budget.
+It is intentionally scoped to stay simple while following solid engineering practices.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Current
 
-## React Compiler
+#### Dashboard with:
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- Available recipes
+- Upcoming recipes
+- Portion management (+ / −)
+- Automatic status transitions (e.g. cooked recipes)
+- Backend-driven state (database is the source of truth)
+- Basic authentication (predetermined credentials)
 
-## Expanding the ESLint configuration
+#### Planned (v2)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Saved recipes page
+- Budget tracking & statistics
+- Recipe editing
+- Improved authentication (JWT)
+- Deployment (frontend + backend)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Monorepo (logical separation)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- matsedel/
+- ├─ backend/     # Java / Spring Boot API
+- └─ frontend/    # React / TypeScript SPA
+
+### Backend
+
+- Java 21
+- Spring Boot
+- Spring Security (Basic Auth)
+- Spring Data JPA
+- PostgreSQL (Neon)
+- Flyway (schema + seed migrations)
+
+#### Design principles:
+
+- Semi-modular monolith
+- Explicit database migrations
+- Service layer owns business rules
+- Controllers expose stable API contracts
+
+### Frontend
+
+- React
+- TypeScript
+- MUI (Material UI)
+- Axios (single configured client)
+
+#### Design principles:
+
+- Thin components
+- Centralized API access
+
+### Authentication
+
+- Basic Auth
+- Predetermined credentials (no signup)
+- Stored client-side as Base64 for development
+- All /api/** endpoints are protected
+
+This will be replaced with JWT in a later iteration.
+
+#### Database & Migrations
+
+- PostgreSQL (hosted on Neon)
+- Flyway is the single source of truth for schema
+- Hibernate runs in validate mode (no auto-DDL)
+
+#### Example migrations:
+
+- V1__create_recipes_table.sql
+- V2__seed_recipes.sql
+
+## Getting Started (Local)
+### Backend
+
+#### Requirements:
+
+- Java 21
+- PostgreSQL (or Neon)
+- Gradle
+
+#### Environment variables
+
+DB_URL=jdbc:postgresql://<host>/<db>?sslmode=require
+DB_USERNAME=...
+DB_PASSWORD=...
+
+
+### Run
+
+```bash
+cd backend
+./gradlew bootRun
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+API will be available at:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+http://localhost:8080/api
+
+### Frontend
+
+#### Requirements:
+
+- Node.js (18+ recommended)
+- npm / pnpm / yarn
+
+#### Run:
+
+```bash
+cd frontend
+npm install 
+npm run dev 
 ```
+
+Frontend will be available at:
+
+http://localhost:5173
+
+API Overview (v1)
+GET    /api/recipes/available
+GET    /api/recipes/upcoming
+PATCH  /api/recipes/{id}/portions
+
+
+All endpoints require authentication.
+
+Project Philosophy
+
+This project intentionally prioritizes:
+
+clarity over cleverness
+
+explicit over implicit behavior
+
+“good enough” solutions that can evolve
+
+It is designed as a realistic solo-developer system, not a demo app.
+
+Status
+
+Active development
+Expect breaking changes as features evolve.
