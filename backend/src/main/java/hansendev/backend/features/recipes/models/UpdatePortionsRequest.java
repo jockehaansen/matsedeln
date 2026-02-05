@@ -1,4 +1,5 @@
 package hansendev.backend.features.recipes.models;
 
-public record UpdatePortionsRequest() {
+public record UpdatePortionsRequest(int delta) {
+
 }

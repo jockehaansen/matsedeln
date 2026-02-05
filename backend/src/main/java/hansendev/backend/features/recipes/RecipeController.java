@@ -2,11 +2,10 @@ package hansendev.backend.features.recipes;
 
 import hansendev.backend.features.recipes.constants.Status;
 import hansendev.backend.features.recipes.models.Recipe;
+import hansendev.backend.features.recipes.models.UpdatePortionsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +24,11 @@ public class RecipeController {
     @GetMapping("/upcoming")
     public ResponseEntity<List<Recipe>> getUpcomingRecipes(){
         return ResponseEntity.ok(recipeService.getAllByStatus(Status.UPCOMING));
+    }
+
+    @PatchMapping("/{id}/portions")
+    public ResponseEntity<Recipe> updatePortions(@PathVariable Long id, @RequestBody UpdatePortionsRequest request){
+        return ResponseEntity.ok(recipeService.updatePortions(id, request));
     }
 
 }
