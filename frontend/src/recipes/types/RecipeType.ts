@@ -5,4 +5,5 @@ export type RecipeType = {
   title: string;
   proteinType: ProteinType;
   portionsRemaining: number;
+  status: string;
 };

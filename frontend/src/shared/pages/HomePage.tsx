@@ -7,12 +7,17 @@ import {
   ListItem,
   Typography,
   LinearProgress,
+  CircularProgress,
 } from "@mui/material";
 
 import RecipeCard from "../../recipes/components/RecipeCard";
 import type { RecipeType } from "../../recipes/types/RecipeType";
 import { useEffect, useState } from "react";
-import { getAvailableRecipes, getUpcomingRecipes } from "../../recipes/api";
+import {
+  getAvailableRecipes,
+  getUpcomingRecipes,
+  updatePortions,
+} from "../../recipes/api";
 
 export default function HomePage() {
   const budget = 3000;
@@ -24,35 +29,60 @@ export default function HomePage() {
   const [loading, isLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  /* TODO: 
+  
+  Handle api errors
+  Transfer recipe from upcoming to available
+  Edit recipe (v2)
+  Remove recipe
+  Budget (set, reset, edit)
+  */
+  async function loadDashboard() {
+    isLoading(true);
+    setError(null);
 
-    async function load() {
-      isLoading(true);
-      setError(null);
+    try {
+      const [available, upcoming] = await Promise.all([
+        getAvailableRecipes(),
+        getUpcomingRecipes(),
+      ]);
 
-      try {
-        const [available, upcoming] = await Promise.all([
-          getAvailableRecipes(),
-          getUpcomingRecipes(),
-        ]);
-
-        if (!cancelled) {
-          setAvailableRecipes(available);
-          setUpcomingRecipes(upcoming);
-        }
-      } catch (e) {
-        if (!cancelled) setError("Failed to load recipes");
-      } finally {
-        if (!cancelled) isLoading(false);
-      }
+      setAvailableRecipes(available);
+      setUpcomingRecipes(upcoming);
+    } catch (e) {
+      setError("Failed to load recipes");
+      console.error(error, e);
+    } finally {
+      isLoading(false);
     }
+  }
 
-    load();
-    return () => {
-      cancelled = true;
-    };
+  useEffect(() => {
+    loadDashboard();
   }, []);
+
+  function applyPortionChange(res: RecipeType) {
+    {
+      /* finding the index to keep it´s index in the array*/
+    }
+    setAvailableRecipes((prev) => {
+      const index = prev.findIndex((r) => r.id === res.id);
+      if (index === -1) return prev;
+
+      const copy = [...prev];
+      copy[index] = res;
+      return copy;
+    });
+  }
+
+  const handleOnDeltaChange = async (id: number, delta: 1 | -1) => {
+    try {
+      const res = await updatePortions(id, delta);
+      applyPortionChange(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -69,13 +99,29 @@ export default function HomePage() {
               <Typography variant="h5" sx={{ mb: 1 }}>
                 Foods available
               </Typography>
-              <List dense>
-                {availableRecipes.map((recipe) => (
-                  <ListItem key={recipe.id} sx={{ py: 0.5 }}>
-                    <RecipeCard recipe={recipe} />
-                  </ListItem>
-                ))}
-              </List>
+              {loading ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: 120,
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <List dense>
+                  {availableRecipes.map((recipe) => (
+                    <ListItem key={recipe.id} sx={{ py: 0.5 }}>
+                      <RecipeCard
+                        recipe={recipe}
+                        onDeltaChange={handleOnDeltaChange}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -88,13 +134,29 @@ export default function HomePage() {
               <Typography variant="h5" sx={{ mb: 1 }}>
                 Coming recipes
               </Typography>
-              <List dense>
-                {upcomingRecipes.map((upcoming) => (
-                  <ListItem key={upcoming.id} sx={{ py: 0.5 }}>
-                    <RecipeCard recipe={upcoming} />
-                  </ListItem>
-                ))}
-              </List>
+              {loading ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: 120,
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <List dense>
+                  {upcomingRecipes.map((upcoming) => (
+                    <ListItem key={upcoming.id} sx={{ py: 0.5 }}>
+                      <RecipeCard
+                        recipe={upcoming}
+                        onDeltaChange={handleOnDeltaChange}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>

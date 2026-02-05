@@ -18,9 +18,10 @@ import { proteinColorMap } from "../../shared/proteinColorMap";
 
 type RecipeProps = {
   recipe: RecipeType;
+  onDeltaChange: (id: number, delta: 1 | -1) => Promise<void>;
 };
 
-export default function RecipeCard({ recipe }: RecipeProps) {
+export default function RecipeCard({ recipe, onDeltaChange }: RecipeProps) {
   const proteinChipColor = proteinColorMap[recipe.proteinType];
 
   return (
@@ -72,14 +73,22 @@ export default function RecipeCard({ recipe }: RecipeProps) {
               }}
             >
               <Chip variant="outlined" label={recipe.portionsRemaining} />
-              <ButtonGroup size="small" variant="outlined">
-                <Button aria-label="decrease portions" onClick={() => null}>
-                  <RemoveIcon fontSize="small" />
-                </Button>
-                <Button aria-label="increase portions" onClick={() => null}>
-                  <AddIcon fontSize="small" />
-                </Button>
-              </ButtonGroup>
+              {recipe.status == "AVAILABLE" ? (
+                <ButtonGroup size="small" variant="outlined">
+                  <Button
+                    aria-label="decrease portions"
+                    onClick={() => onDeltaChange(recipe.id, -1)}
+                  >
+                    <RemoveIcon fontSize="small" />
+                  </Button>
+                  <Button
+                    aria-label="increase portions"
+                    onClick={() => onDeltaChange(recipe.id, 1)}
+                  >
+                    <AddIcon fontSize="small" />
+                  </Button>
+                </ButtonGroup>
+              ) : null}
             </Box>
           </Box>
           <Divider />
