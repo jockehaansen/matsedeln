@@ -40,4 +40,13 @@ public class RecipeService {
 
         return recipeRepository.save(recipe);
     }
+
+    @Transactional
+    public void removeRecipe(Long id){
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
+
+        recipe.setStatus(Status.SAVED);
+        recipeRepository.save(recipe);
+    }
 }
