@@ -34,7 +34,7 @@ export default function HomePage() {
   Handle api errors
   Transfer recipe from upcoming to available
   Edit recipe (v2)
-  Remove recipe
+  Remove recipe -> active
   Budget (set, reset, edit)
   */
   async function loadDashboard() {
@@ -79,6 +79,9 @@ export default function HomePage() {
     try {
       const res = await updatePortions(id, delta);
       applyPortionChange(res);
+      if (res.portionsRemaining == 0) {
+        setAvailableRecipes((prev) => prev.filter((r) => r.id !== res.id));
+      }
     } catch (e) {
       console.error(e);
     }
