@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import {
   getAvailableRecipes,
   getUpcomingRecipes,
+  removeRecipe,
   updatePortions,
 } from "../../recipes/api";
 
@@ -87,6 +88,12 @@ export default function HomePage() {
     }
   };
 
+  const handleOnRemoveClick = async (id: number) => {
+    await removeRecipe(id);
+    setAvailableRecipes((prev) => prev.filter((r) => r.id != id));
+    setUpcomingRecipes((prev) => prev.filter((r) => r.id != id));
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h2" sx={{ mb: 8, fontWeight: 700 }}>
@@ -120,6 +127,7 @@ export default function HomePage() {
                       <RecipeCard
                         recipe={recipe}
                         onDeltaChange={handleOnDeltaChange}
+                        onRemoveClick={handleOnRemoveClick}
                       />
                     </ListItem>
                   ))}

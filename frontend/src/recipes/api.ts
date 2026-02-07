@@ -17,3 +17,8 @@ export async function updatePortions(id: number, delta: 1 | -1) {
   });
   return res.data;
 }
+
+export async function removeRecipe(id: number) {
+  const res = await api.patch<void>(`/api/recipes/${id}/remove`);
+  return res.data;
+}

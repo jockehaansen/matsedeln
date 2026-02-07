@@ -22,27 +22,58 @@ import ConfirmDialog from "../../shared/components/ConfirmDialog";
 type RecipeProps = {
   recipe: RecipeType;
   onDeltaChange: (id: number, delta: 1 | -1) => Promise<void> | void;
+  onRemoveClick: (id: number) => Promise<void> | void;
 };
 
-export default function RecipeCard({ recipe, onDeltaChange }: RecipeProps) {
+const dialogConfig = {
+  lastPortion: {
+    title: "Eat last portion?",
+    message: "This will remove the recipe from the available list.",
+    confirmText: "OK",
+  },
+  remove: {
+    title: "Remove recipe?",
+    message: "This will remove the recipe from your plan.",
+    confirmText: "Remove",
+  },
+};
+
+export default function RecipeCard({
+  recipe,
+  onDeltaChange,
+  onRemoveClick,
+}: RecipeProps) {
   const proteinChipColor = proteinColorMap[recipe.proteinType];
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [dialogType, setDialogType] = useState<"lastPortion" | "remove" | null>(
+    null,
+  );
 
   const handleDecreaseClick = () => {
     if (recipe.portionsRemaining === 1) {
-      setConfirmOpen(true);
+      setDialogType("lastPortion");
       return;
     }
     onDeltaChange(recipe.id, -1);
   };
 
-  const handleConfirmLastPortion = () => {
-    setConfirmOpen(false);
-    onDeltaChange(recipe.id, -1);
+  const handleRemoveRecipeClick = () => {
+    setDialogType("remove");
   };
 
-  const handleCancelConfirm = () => {
-    setConfirmOpen(false);
+  const handleConfirm = () => {
+    if (dialogType === "lastPortion") {
+      onDeltaChange(recipe.id, -1);
+    }
+
+    if (dialogType === "remove") {
+      onRemoveClick(recipe.id);
+    }
+
+    setDialogType(null);
+  };
+
+  const handleCancel = () => {
+    setDialogType(null);
   };
 
   return (
@@ -129,7 +160,7 @@ export default function RecipeCard({ recipe, onDeltaChange }: RecipeProps) {
               </IconButton>
               <IconButton
                 aria-label="remove recipe"
-                onClick={() => null}
+                onClick={handleRemoveRecipeClick}
                 size="small"
               >
                 <RemoveCircleOutline fontSize="small" />
@@ -140,13 +171,13 @@ export default function RecipeCard({ recipe, onDeltaChange }: RecipeProps) {
       </Card>
 
       <ConfirmDialog
-        open={confirmOpen}
-        title="Eat last portion?"
-        message="This will remove the recipe from the available list."
-        confirmText="OK"
+        open={dialogType !== null}
+        title={dialogType ? dialogConfig[dialogType].title : ""}
+        message={dialogType ? dialogConfig[dialogType].message : ""}
+        confirmText={dialogType ? dialogConfig[dialogType].confirmText : ""}
         cancelText="Cancel"
-        onConfirm={handleConfirmLastPortion}
-        onCancel={handleCancelConfirm}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </>
   );
