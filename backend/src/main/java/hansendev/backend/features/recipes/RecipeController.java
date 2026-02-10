@@ -3,6 +3,7 @@ package hansendev.backend.features.recipes;
 import hansendev.backend.features.recipes.constants.Status;
 import hansendev.backend.features.recipes.models.Recipe;
 import hansendev.backend.features.recipes.models.UpdatePortionsRequest;
+import hansendev.backend.features.recipes.models.UpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +36,10 @@ public class RecipeController {
     public ResponseEntity<Void> deleteRecipe(@PathVariable Long id){
         recipeService.removeRecipe(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Recipe> updateRecipeStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest request){
+        return ResponseEntity.ok(recipeService.updateRecipeStatus(id, request));
     }
 }

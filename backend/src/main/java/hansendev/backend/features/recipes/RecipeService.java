@@ -3,6 +3,7 @@ package hansendev.backend.features.recipes;
 import hansendev.backend.features.recipes.constants.Status;
 import hansendev.backend.features.recipes.models.Recipe;
 import hansendev.backend.features.recipes.models.UpdatePortionsRequest;
+import hansendev.backend.features.recipes.models.UpdateStatusRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,14 @@ public class RecipeService {
 
         recipe.setStatus(Status.SAVED);
         recipeRepository.save(recipe);
+    }
+
+    @Transactional
+    public Recipe updateRecipeStatus(Long id, UpdateStatusRequest request){
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
+
+        recipe.setStatus(request.status());
+        return recipeRepository.save(recipe);
     }
 }

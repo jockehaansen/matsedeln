@@ -1,4 +1,6 @@
 package hansendev.backend.features.recipes.models;
 
-public record UpdateStatusRequest() {
+import hansendev.backend.features.recipes.constants.Status;
+
+public record UpdateStatusRequest(Status status) {
 }
