@@ -22,3 +22,10 @@ export async function removeRecipe(id: number) {
   const res = await api.patch<void>(`/api/recipes/${id}/remove`);
   return res.data;
 }
+
+export async function updateStatus(id: number, status: string) {
+  const res = await api.patch<RecipeType>(`/api/recipes/${id}/status`, {
+    status,
+  });
+  return res.data;
+}

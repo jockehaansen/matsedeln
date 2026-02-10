@@ -18,6 +18,7 @@ import {
   getUpcomingRecipes,
   removeRecipe,
   updatePortions,
+  updateStatus,
 } from "../../recipes/api";
 
 export default function HomePage() {
@@ -87,6 +88,29 @@ export default function HomePage() {
     }
   };
 
+  const handleOnStatusChange = async (
+    id: number,
+    status: "AVAILABLE" | "UPCOMING" | "SAVED",
+  ) => {
+    try {
+      const res = await updateStatus(id, status);
+      applyStatusUpdate(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  function applyStatusUpdate(res: RecipeType) {
+    setAvailableRecipes((prev) => prev.filter((r) => r.id !== res.id));
+    setUpcomingRecipes((prev) => prev.filter((r) => r.id !== res.id));
+
+    if (res.status === "AVAILABLE") {
+      setAvailableRecipes((prev) => [res, ...prev]);
+    } else if (res.status === "UPCOMING") {
+      setUpcomingRecipes((prev) => [res, ...prev]);
+    }
+  }
+
   const handleOnRemoveClick = async (id: number) => {
     await removeRecipe(id);
     setAvailableRecipes((prev) => prev.filter((r) => r.id != id));
@@ -133,6 +157,7 @@ export default function HomePage() {
                           recipe={recipe}
                           onDeltaChange={handleOnDeltaChange}
                           onRemoveClick={handleOnRemoveClick}
+                          onStatusUpdate={handleOnStatusChange}
                         />
                       </Box>
                     </ListItem>
@@ -179,6 +204,7 @@ export default function HomePage() {
                           recipe={upcoming}
                           onDeltaChange={handleOnDeltaChange}
                           onRemoveClick={handleOnRemoveClick}
+                          onStatusUpdate={handleOnStatusChange}
                         />
                       </Box>
                     </ListItem>

@@ -25,6 +25,10 @@ type RecipeProps = {
   recipe: RecipeType;
   onDeltaChange: (id: number, delta: 1 | -1) => Promise<void> | void;
   onRemoveClick: (id: number) => Promise<void> | void;
+  onStatusUpdate: (
+    id: number,
+    status: "AVAILABLE" | "UPCOMING" | "SAVED",
+  ) => Promise<void> | void;
 };
 
 const dialogConfig = {
@@ -44,6 +48,7 @@ export default function RecipeCard({
   recipe,
   onDeltaChange,
   onRemoveClick,
+  onStatusUpdate,
 }: RecipeProps) {
   const proteinChipColor = proteinColorMap[recipe.proteinType];
   const [dialogType, setDialogType] = useState<"lastPortion" | "remove" | null>(
@@ -64,6 +69,11 @@ export default function RecipeCard({
     if (dialogType === "lastPortion") onDeltaChange(recipe.id, -1);
     if (dialogType === "remove") onRemoveClick(recipe.id);
     setDialogType(null);
+  };
+
+  const handleStatusUpdate = () => {
+    if (recipe.status == "AVAILABLE") onStatusUpdate(recipe.id, "UPCOMING");
+    if (recipe.status == "UPCOMING") onStatusUpdate(recipe.id, "AVAILABLE");
   };
 
   const handleCancel = () => setDialogType(null);
@@ -181,7 +191,7 @@ export default function RecipeCard({
 
                 <IconButton
                   aria-label="move recipe"
-                  onClick={() => null}
+                  onClick={handleStatusUpdate}
                   size="small"
                 >
                   <ArrowForwardIcon />
@@ -194,7 +204,7 @@ export default function RecipeCard({
                 {" "}
                 <IconButton
                   aria-label="move recipe"
-                  onClick={() => null}
+                  onClick={handleStatusUpdate}
                   size="small"
                 >
                   <ArrowBackIcon />
