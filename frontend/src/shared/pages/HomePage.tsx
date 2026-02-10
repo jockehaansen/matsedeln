@@ -35,7 +35,6 @@ export default function HomePage() {
   Handle api errors
   Transfer recipe from upcoming to available
   Edit recipe (v2)
-  Remove recipe -> active
   Budget (set, reset, edit)
   */
   async function loadDashboard() {
@@ -100,10 +99,15 @@ export default function HomePage() {
         Matsedeln
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>
+      <Grid container spacing={2} alignItems="flex-start">
+        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
           <Card
-            sx={{ borderRadius: 2, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+            sx={{
+              borderRadius: 2,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              height: "100%",
+              width: "100%",
+            }}
           >
             <CardContent>
               <Typography variant="h5" sx={{ mb: 1 }}>
@@ -123,12 +127,14 @@ export default function HomePage() {
               ) : (
                 <List dense>
                   {availableRecipes.map((recipe) => (
-                    <ListItem key={recipe.id} sx={{ py: 0.5 }}>
-                      <RecipeCard
-                        recipe={recipe}
-                        onDeltaChange={handleOnDeltaChange}
-                        onRemoveClick={handleOnRemoveClick}
-                      />
+                    <ListItem key={recipe.id} sx={{ py: 0.5, display: "flex" }}>
+                      <Box sx={{ width: "100%" }}>
+                        <RecipeCard
+                          recipe={recipe}
+                          onDeltaChange={handleOnDeltaChange}
+                          onRemoveClick={handleOnRemoveClick}
+                        />
+                      </Box>
                     </ListItem>
                   ))}
                 </List>
@@ -137,9 +143,14 @@ export default function HomePage() {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
           <Card
-            sx={{ borderRadius: 2, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+            sx={{
+              borderRadius: 2,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              height: "100%",
+              width: "100%",
+            }}
           >
             <CardContent>
               <Typography variant="h5" sx={{ mb: 1 }}>
@@ -159,11 +170,17 @@ export default function HomePage() {
               ) : (
                 <List dense>
                   {upcomingRecipes.map((upcoming) => (
-                    <ListItem key={upcoming.id} sx={{ py: 0.5 }}>
-                      <RecipeCard
-                        recipe={upcoming}
-                        onDeltaChange={handleOnDeltaChange}
-                      />
+                    <ListItem
+                      key={upcoming.id}
+                      sx={{ py: 0.5, display: "flex" }}
+                    >
+                      <Box sx={{ width: "100%" }}>
+                        <RecipeCard
+                          recipe={upcoming}
+                          onDeltaChange={handleOnDeltaChange}
+                          onRemoveClick={handleOnRemoveClick}
+                        />
+                      </Box>
                     </ListItem>
                   ))}
                 </List>
@@ -172,9 +189,14 @@ export default function HomePage() {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
           <Card
-            sx={{ borderRadius: 2, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+            sx={{
+              borderRadius: 2,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              height: "100%",
+              width: "100%",
+            }}
           >
             <CardContent>
               <Typography variant="h5" sx={{ mb: 1 }}>
