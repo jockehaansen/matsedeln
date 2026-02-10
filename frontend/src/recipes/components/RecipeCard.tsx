@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   Divider,
-  Stack,
   Typography,
   Box,
   ButtonGroup,
@@ -13,6 +12,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 import { EditOutlined, RemoveCircleOutline } from "@mui/icons-material";
 
 import type { RecipeType } from "../types/RecipeType";
@@ -66,8 +68,6 @@ export default function RecipeCard({
 
   const handleCancel = () => setDialogType(null);
 
-  const showPortionControls = recipe.status === "AVAILABLE";
-
   return (
     <>
       <Card
@@ -75,7 +75,7 @@ export default function RecipeCard({
         sx={{
           borderRadius: 2,
           width: "100%",
-          height: "100%", // critical for equal-height in a stretching parent
+          height: "100%",
           display: "flex",
           flexDirection: "column",
         }}
@@ -97,10 +97,10 @@ export default function RecipeCard({
 
           <Divider />
 
-          {/* Middle section (kept consistent height across statuses) */}
+          {/* Middle section  */}
           <Box
             sx={{
-              minHeight: 44, // ensures UPCOMING cards don't collapse when controls are hidden
+              minHeight: 44,
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -118,8 +118,8 @@ export default function RecipeCard({
               }}
             />
 
-            {/* Right side: either controls OR a spacer that takes the same vertical footprint */}
-            {showPortionControls ? (
+            {/* Portion Controls */}
+            {recipe.status == "AVAILABLE" ? (
               <Box
                 sx={{
                   display: "flex",
@@ -146,14 +146,13 @@ export default function RecipeCard({
                 </ButtonGroup>
               </Box>
             ) : (
-              // Placeholder keeps layout consistent even when controls are not shown
               <Box sx={{ height: 32 }} />
             )}
           </Box>
 
           <Divider />
 
-          {/* Footer actions pinned to bottom */}
+          {/* Recipe Controls */}
           <Box
             sx={{
               mt: "auto",
@@ -162,25 +161,64 @@ export default function RecipeCard({
               gap: 0.5,
             }}
           >
-            <IconButton
-              aria-label="edit recipe"
-              onClick={() => null}
-              size="small"
-            >
-              <EditOutlined fontSize="small" />
-            </IconButton>
+            {recipe.status == "AVAILABLE" && (
+              <>
+                <IconButton
+                  aria-label="edit recipe"
+                  onClick={() => null}
+                  size="small"
+                >
+                  <EditOutlined fontSize="small" />
+                </IconButton>
 
-            <IconButton
-              aria-label="remove recipe"
-              onClick={handleRemoveRecipeClick}
-              size="small"
-            >
-              <RemoveCircleOutline fontSize="small" />
-            </IconButton>
+                <IconButton
+                  aria-label="remove recipe"
+                  onClick={handleRemoveRecipeClick}
+                  size="small"
+                >
+                  <RemoveCircleOutline fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  aria-label="move recipe"
+                  onClick={() => null}
+                  size="small"
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+              </>
+            )}
+
+            {recipe.status == "UPCOMING" && (
+              <>
+                {" "}
+                <IconButton
+                  aria-label="move recipe"
+                  onClick={() => null}
+                  size="small"
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="edit recipe"
+                  onClick={() => null}
+                  size="small"
+                >
+                  <EditOutlined fontSize="small" />
+                </IconButton>
+                <IconButton
+                  aria-label="remove recipe"
+                  onClick={handleRemoveRecipeClick}
+                  size="small"
+                >
+                  <RemoveCircleOutline fontSize="small" />
+                </IconButton>
+              </>
+            )}
           </Box>
         </CardContent>
       </Card>
-
+      {/* Confirm Modal */}
       <ConfirmDialog
         open={dialogType !== null}
         title={dialogType ? dialogConfig[dialogType].title : ""}
